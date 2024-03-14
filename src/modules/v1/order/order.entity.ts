@@ -15,7 +15,7 @@ import { StatusDto } from 'src/dtos';
 import { StatusEnums } from 'src/enums';
 
 @Entity()
-export class User {
+export class Order {
   @PrimaryGeneratedColumn()
   id: number;
 

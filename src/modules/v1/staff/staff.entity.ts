@@ -4,7 +4,7 @@ import {
   Column,
   CreateDateColumn,
 } from 'typeorm';
-import { IsNotEmpty } from 'class-validator';
+import { IsDate, IsNotEmpty, IsString } from 'class-validator';
 import { StatusDto } from 'src/dtos';
 import { StatusEnums } from 'src/enums';
 
@@ -15,10 +15,12 @@ export class Staff {
 
   @Column()
   @IsNotEmpty()
+  @IsString()
   staffId: string;
 
   @Column()
   @IsNotEmpty()
+  @IsString()
   organizationId: string;
 
   @Column({
@@ -27,11 +29,14 @@ export class Staff {
     default: 'active',
   })
   @IsNotEmpty()
+  @IsString()
   status: StatusDto['status'];
 
   @CreateDateColumn({ type: 'timestamp' })
+  @IsDate()
   createdAt: Date;
 
   @CreateDateColumn({ type: 'timestamp' })
+  @IsDate()
   updatedAt: Date;
 }

@@ -4,7 +4,7 @@ import {
   Column,
   CreateDateColumn,
 } from 'typeorm';
-import { IsNotEmpty } from 'class-validator';
+import { IsDate, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 import { StatusDto } from 'src/dtos';
 import { StatusEnums } from 'src/enums';
 
@@ -15,26 +15,32 @@ export class Product {
 
   @Column()
   @IsNotEmpty()
+  @IsString()
   publicId: string;
 
   @Column()
   @IsNotEmpty()
+  @IsString()
   name: string;
 
   @Column()
   @IsNotEmpty()
+  @IsNumber()
   price: number;
 
   @Column()
   @IsNotEmpty()
+  @IsString()
   description: string;
 
   @Column()
   @IsNotEmpty()
+  @IsString()
   initiatorId: string;
 
   @Column()
   @IsNotEmpty()
+  @IsString()
   organizationId: string;
 
   @Column({
@@ -43,11 +49,14 @@ export class Product {
     default: 'active',
   })
   @IsNotEmpty()
+  @IsString()
   status: StatusDto['status'];
 
   @CreateDateColumn({ type: 'timestamp' })
+  @IsDate()
   createdAt: Date;
 
   @CreateDateColumn({ type: 'timestamp' })
+  @IsDate()
   updatedAt: Date;
 }
