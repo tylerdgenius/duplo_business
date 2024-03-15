@@ -40,3 +40,9 @@ You create a user management module on version 1 of this microservice in the fol
 src/modules/{{currentVersion}}/{{modulefolderName}}
 
 You register this module in the version loader
+
+### Seed the database
+
+Run the service and before starting any registration, it is crucial to seed the database as this populates all the necessary permissions needed to work with the system
+
+The appropriate endpoint to hit is {{BASE_URL}}/permissions/create

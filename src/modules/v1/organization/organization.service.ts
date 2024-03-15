@@ -20,7 +20,7 @@ export class OrganizationService {
   }
 
   async createOrganization(organizationData: {
-    admin: User;
+    baseUser: User;
     organizationName: string;
   }) {
     try {
@@ -34,7 +34,7 @@ export class OrganizationService {
       const organization = new Organization();
 
       organization.name = organizationData.organizationName;
-      organization.superAdmin = organizationData.admin;
+      organization.baseUser = organizationData.baseUser;
       organization.createdAt = new Date();
       organization.updatedAt = new Date();
 

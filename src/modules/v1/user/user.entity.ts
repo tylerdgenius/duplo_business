@@ -9,6 +9,8 @@ import {
 import { StatusEnums, TypesEnum } from 'src/enums';
 import { Organization } from '../organization/organization.entity';
 import { Product } from '../product/product.entity';
+import { Exclude } from 'class-transformer';
+import { Role } from '../role/role.entity';
 
 @Entity()
 export class User {
@@ -18,11 +20,9 @@ export class User {
   @Column()
   email: string;
 
+  @Exclude()
   @Column()
   password: string;
-
-  @Column()
-  role?: string;
 
   @Column({
     type: 'enum',
@@ -41,8 +41,11 @@ export class User {
   @ManyToOne(() => Organization, (organization) => organization.staff)
   organization: Organization;
 
+  @ManyToOne(() => Role, (role) => role.users)
+  role: Role;
+
   @OneToMany(() => Product, (product) => product.initiator)
-  products: Product;
+  products: Product[];
 
   @CreateDateColumn({ type: 'timestamp' })
   createdAt: Date;

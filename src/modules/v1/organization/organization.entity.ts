@@ -9,6 +9,7 @@ import {
 import { Product } from '../product/product.entity';
 import { Order } from '../order/order.entity';
 import { User } from '../user/user.entity';
+import { Role } from '../role/role.entity';
 
 @Entity()
 export class Organization {
@@ -19,7 +20,7 @@ export class Organization {
   name: string;
 
   @OneToOne(() => User, (user) => user.organization)
-  superAdmin: User;
+  baseUser: User;
 
   @OneToMany(() => Product, (product) => product.organization)
   products: Product[];
@@ -29,6 +30,9 @@ export class Organization {
 
   @OneToMany(() => User, (user) => user.organization)
   staff: User[];
+
+  @OneToMany(() => Role, (role) => role.organization)
+  roles: Role[];
 
   @CreateDateColumn({ type: 'timestamp' })
   createdAt: Date;

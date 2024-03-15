@@ -16,7 +16,7 @@ export class StatusCodeInterceptor implements NestInterceptor {
         const originalStatus = response.statusCode as number;
 
         return {
-          statusCode: originalStatus,
+          code: originalStatus,
           ...data,
         };
       }),

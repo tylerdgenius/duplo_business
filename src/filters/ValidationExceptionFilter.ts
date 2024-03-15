@@ -13,7 +13,7 @@ export class ValidationExceptionFilter implements ExceptionFilter {
 
     if (exception?.getStatus) {
       status = exception.getStatus();
-      message = 'Internal Server Error';
+      message = exception?.response?.error || 'Internal server error';
     }
 
     if (exception) {

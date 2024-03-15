@@ -27,14 +27,6 @@ export class CreateUserDto {
   type: string;
 
   @ApiProperty({
-    required: false,
-    description:
-      'This property identifies the users role in their organization',
-  })
-  @IsOptional()
-  role?: string;
-
-  @ApiProperty({
     required: true,
     description: 'This property identifies the users email',
   })

@@ -1,11 +1,9 @@
 import { Body, Controller, Post, ValidationPipe } from '@nestjs/common';
 import { CreateUserDto, LoginUserDto } from 'src/dtos';
-import { getters, routes } from 'src/helpers';
+import { routes } from 'src/helpers';
 import { ResponseObject } from 'src/models';
 import { UserService } from './user.service';
 import { User } from './user.entity';
-
-console.log({ urls: getters.getConfigService().get('APP_VERSION') });
 
 @Controller('user')
 export class UserController {
@@ -18,7 +16,6 @@ export class UserController {
     const registeredUser = await this.userService.registerUser(data);
 
     return {
-      code: 200,
       message: 'Successfully registered user',
       payload: registeredUser,
       status: true,
@@ -32,7 +29,6 @@ export class UserController {
     const loggedInUser = await this.userService.loginUser(data);
 
     return {
-      code: 200,
       message: 'Successfully logged user in',
       payload: loggedInUser,
       status: true,

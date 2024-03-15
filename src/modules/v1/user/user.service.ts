@@ -13,6 +13,7 @@ import { StatusEnums, TypesEnum } from 'src/enums';
 import { OrganizationService } from '../organization/organization.service';
 import { hash, compare } from 'bcryptjs';
 import { sign } from 'jsonwebtoken';
+import { RoleService } from '../role/role.service';
 
 @Injectable()
 export class UserService {
@@ -20,6 +21,7 @@ export class UserService {
     @Inject(constants.REPOSITORY.USER_REPOSITORY)
     private userRepository: Repository<User>,
     private organizationService: OrganizationService,
+    private roleService: RoleService,
   ) {}
 
   async findUserByEmail(email: string) {
@@ -49,7 +51,6 @@ export class UserService {
 
     user.password = encryptedPassword;
     user.email = data.email;
-    user.role = data.role ? data.role : '';
     user.status = StatusEnums.Default;
     user.type = data.type;
     user.createdAt = new Date();
@@ -83,6 +84,10 @@ export class UserService {
 
     savedUser.organization = organization;
 
+    const role = await this.roleService.createViewRole(organization);
+
+    savedUser.role = role;
+
     this.userRepository.save(savedUser);
 
     return savedUser;
@@ -109,10 +114,18 @@ export class UserService {
 
     const user = await this.createUser(data);
 
-    await this.organizationService.createOrganization({
-      admin: user,
-      organizationName: data.organizationName,
-    });
+    const createdOrganization =
+      await this.organizationService.createOrganization({
+        baseUser: user,
+        organizationName: data.organizationName,
+      });
+
+    const role =
+      await this.roleService.createSuperAdminRole(createdOrganization);
+
+    user.role = role;
+
+    user.organization = createdOrganization;
 
     this.userRepository.save(user);
 
