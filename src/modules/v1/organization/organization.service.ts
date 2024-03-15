@@ -2,8 +2,7 @@ import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { constants } from 'src/helpers';
 import { Repository } from 'typeorm';
 import { Organization } from './organization.entity';
-import { CreateOrganizationDto } from 'src/dtos';
-import { v4 as uuidv4 } from 'uuid';
+import { User } from '../user/user.entity';
 
 @Injectable()
 export class OrganizationService {
@@ -12,39 +11,37 @@ export class OrganizationService {
     private organizationRepository: Repository<Organization>,
   ) {}
 
-  async findOrganizationByReference(reference: string) {
+  async findOne(filter: Partial<Organization>) {
     return this.organizationRepository.findOne({
       where: {
-        reference,
+        ...filter,
       },
     });
   }
 
-  async findOrganizationByName(organizationName: string) {
-    return this.organizationRepository.findOne({
-      where: {
-        name: organizationName,
-      },
-    });
-  }
+  async createOrganization(organizationData: {
+    admin: User;
+    organizationName: string;
+  }) {
+    try {
+      if (!organizationData) {
+        throw new HttpException(
+          'The given data is invalid',
+          HttpStatus.UNPROCESSABLE_ENTITY,
+        );
+      }
 
-  createOrganization(organizationData: CreateOrganizationDto) {
-    if (!organizationData) {
-      throw new HttpException(
-        'The given data is invalid',
-        HttpStatus.UNPROCESSABLE_ENTITY,
-      );
+      const organization = new Organization();
+
+      organization.name = organizationData.organizationName;
+      organization.superAdmin = organizationData.admin;
+      organization.createdAt = new Date();
+      organization.updatedAt = new Date();
+
+      return this.organizationRepository.save(organization);
+    } catch (error) {
+      console.log(error);
+      throw error;
     }
-
-    const organization = new Organization();
-
-    organization.name = organizationData.name;
-    organization.ownerId = organizationData.ownerId;
-    organization.publicId = uuidv4();
-    organization.reference = uuidv4().split('-')[0];
-    organization.createdAt = new Date();
-    organization.updatedAt = new Date();
-
-    return this.organizationRepository.save(organization);
   }
 }

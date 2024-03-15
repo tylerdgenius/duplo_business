@@ -3,10 +3,13 @@ import {
   PrimaryGeneratedColumn,
   Column,
   CreateDateColumn,
+  ManyToOne,
 } from 'typeorm';
-import { IsDate, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsDate } from 'class-validator';
 import { StatusDto } from 'src/dtos';
 import { StatusEnums } from 'src/enums';
+import { Organization } from '../organization/organization.entity';
+import { User } from '../user/user.entity';
 
 @Entity()
 export class Product {
@@ -14,42 +17,25 @@ export class Product {
   id: number;
 
   @Column()
-  @IsNotEmpty()
-  @IsString()
-  publicId: string;
-
-  @Column()
-  @IsNotEmpty()
-  @IsString()
   name: string;
 
   @Column()
-  @IsNotEmpty()
-  @IsNumber()
   price: number;
 
   @Column()
-  @IsNotEmpty()
-  @IsString()
   description: string;
 
-  @Column()
-  @IsNotEmpty()
-  @IsString()
-  initiatorId: string;
+  @ManyToOne(() => User, (user) => user.products)
+  initiator: User;
 
-  @Column()
-  @IsNotEmpty()
-  @IsString()
-  organizationId: string;
+  @ManyToOne(() => Organization, (organization) => organization.products)
+  organization: Organization;
 
   @Column({
     type: 'enum',
     enum: StatusEnums,
     default: 'active',
   })
-  @IsNotEmpty()
-  @IsString()
   status: StatusDto['status'];
 
   @CreateDateColumn({ type: 'timestamp' })

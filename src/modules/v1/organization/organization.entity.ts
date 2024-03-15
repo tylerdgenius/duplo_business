@@ -3,8 +3,12 @@ import {
   PrimaryGeneratedColumn,
   Column,
   CreateDateColumn,
+  OneToMany,
+  OneToOne,
 } from 'typeorm';
-import { IsDate, IsNotEmpty, IsString, IsUUID } from 'class-validator';
+import { Product } from '../product/product.entity';
+import { Order } from '../order/order.entity';
+import { User } from '../user/user.entity';
 
 @Entity()
 export class Organization {
@@ -12,37 +16,23 @@ export class Organization {
   id: number;
 
   @Column()
-  @IsNotEmpty({
-    message: 'Public id is required',
-  })
-  @IsString({
-    message: 'Public id must be of type string to proceed',
-  })
-  @IsUUID('4', {
-    message: 'Public id must be a valid uuid',
-  })
-  publicId: string;
-
-  @Column()
-  @IsNotEmpty()
-  @IsString()
-  ownerId: string;
-
-  @Column()
-  @IsNotEmpty()
-  @IsString()
   name: string;
 
-  @Column()
-  @IsNotEmpty()
-  @IsString()
-  reference: string;
+  @OneToOne(() => User, (user) => user.organization)
+  superAdmin: User;
+
+  @OneToMany(() => Product, (product) => product.organization)
+  products: Product[];
+
+  @OneToMany(() => Order, (order) => order.organization)
+  orders: Order[];
+
+  @OneToMany(() => User, (user) => user.organization)
+  staff: User[];
 
   @CreateDateColumn({ type: 'timestamp' })
-  @IsDate()
   createdAt: Date;
 
   @CreateDateColumn({ type: 'timestamp' })
-  @IsDate()
   updatedAt: Date;
 }

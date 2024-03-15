@@ -3,16 +3,11 @@ import {
   PrimaryGeneratedColumn,
   Column,
   CreateDateColumn,
+  ManyToOne,
 } from 'typeorm';
-import {
-  IsDate,
-  IsNotEmpty,
-  IsNumber,
-  IsPositive,
-  IsString,
-} from 'class-validator';
 import { StatusDto } from 'src/dtos';
 import { StatusEnums } from 'src/enums';
+import { Organization } from '../organization/organization.entity';
 
 @Entity()
 export class Order {
@@ -20,39 +15,21 @@ export class Order {
   id: number;
 
   @Column()
-  @IsNotEmpty()
-  @IsString()
-  publicId: string;
-
-  @Column()
-  @IsNotEmpty()
-  @IsString()
   productId: string;
 
   @Column()
-  @IsNotEmpty()
-  @IsString()
   initiatorId: string;
 
   @Column()
-  @IsNotEmpty()
-  @IsString()
   organisationId: string;
 
   @Column()
-  @IsNotEmpty()
-  @IsString()
   customerId: string;
 
   @Column()
-  @IsNotEmpty()
-  @IsNumber()
   unitPrice: number;
 
   @Column()
-  @IsNotEmpty()
-  @IsNumber()
-  @IsPositive()
   quantity: number;
 
   @Column({
@@ -60,15 +37,14 @@ export class Order {
     enum: StatusEnums,
     default: 'active',
   })
-  @IsNotEmpty()
-  @IsString()
   status: StatusDto['status'];
 
+  @ManyToOne(() => Organization, (organization) => organization.orders)
+  organization: Organization;
+
   @CreateDateColumn({ type: 'timestamp' })
-  @IsDate()
   createdAt: Date;
 
   @CreateDateColumn({ type: 'timestamp' })
-  @IsDate()
   updatedAt: Date;
 }

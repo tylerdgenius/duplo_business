@@ -1,19 +1,18 @@
 import {
+  BadRequestException,
   HttpException,
   HttpStatus,
   Inject,
   Injectable,
-  NotFoundException,
 } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { User } from './user.entity';
 import { constants, getters } from 'src/helpers';
-import { CreateUserDto } from 'src/dtos';
-import { StatusEnums, Types } from 'src/enums';
+import { CreateUserDto, LoginUserDto } from 'src/dtos';
+import { StatusEnums, TypesEnum } from 'src/enums';
 import { OrganizationService } from '../organization/organization.service';
-import { hash } from 'bcryptjs';
-import { v4 as uuidv4 } from 'uuid';
-import { StaffService } from '../staff/staff.service';
+import { hash, compare } from 'bcryptjs';
+import { sign } from 'jsonwebtoken';
 
 @Injectable()
 export class UserService {
@@ -21,7 +20,6 @@ export class UserService {
     @Inject(constants.REPOSITORY.USER_REPOSITORY)
     private userRepository: Repository<User>,
     private organizationService: OrganizationService,
-    private staffService: StaffService,
   ) {}
 
   async findUserByEmail(email: string) {
@@ -52,8 +50,6 @@ export class UserService {
     user.password = encryptedPassword;
     user.email = data.email;
     user.role = data.role ? data.role : '';
-    user.name = data.name;
-    user.publicId = uuidv4();
     user.status = StatusEnums.Default;
     user.type = data.type;
     user.createdAt = new Date();
@@ -65,47 +61,62 @@ export class UserService {
   }
 
   async createStaff(data: CreateUserDto) {
-    const organization =
-      await this.organizationService.findOrganizationByReference(
-        data.organizationReference,
-      );
-
-    if (!organization) {
-      throw new NotFoundException(
-        'Unable to find matching organization. Kindly provide appropriate organization key',
+    if (!data.organizationId) {
+      throw new HttpException(
+        'Organization id is required when creating a staff',
+        HttpStatus.BAD_REQUEST,
       );
     }
 
     const savedUser = await this.createUser(data);
 
-    await this.staffService.createStaff(
-      savedUser.publicId,
-      organization.publicId,
-    );
+    const organization = await this.organizationService.findOne({
+      id: data.organizationId,
+    });
+
+    if (!organization) {
+      throw new HttpException(
+        'Unable to find matching organization to staff to. Kindly provide appropriate organization key',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    savedUser.organization = organization;
+
+    this.userRepository.save(savedUser);
 
     return savedUser;
   }
 
   async createBusiness(data: CreateUserDto) {
-    const organization = await this.organizationService.findOrganizationByName(
-      data.organizationName || data.name,
-    );
+    if (!data.organizationName) {
+      throw new HttpException(
+        'Organization name is required when creating a business account',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    const organization = await this.organizationService.findOne({
+      name: data.organizationName,
+    });
 
     if (organization) {
       throw new HttpException(
-        'You can not create another root account for an already existing organization. Kindly login to your organization root account',
+        'Organization already exists in database. Kindly provide a unique organization name',
         HttpStatus.CONFLICT,
       );
     }
 
-    const savedUser = await this.createUser(data);
+    const user = await this.createUser(data);
 
     await this.organizationService.createOrganization({
-      name: data.organizationName || data.name,
-      ownerId: savedUser.publicId,
+      admin: user,
+      organizationName: data.organizationName,
     });
 
-    return savedUser;
+    this.userRepository.save(user);
+
+    return user;
   }
 
   async registerUser(data: CreateUserDto) {
@@ -116,18 +127,57 @@ export class UserService {
       );
     }
 
-    const user = await this.findUserByEmail(data.email);
+    const userExists = await this.findUserByEmail(data.email);
 
-    if (user) {
+    if (userExists) {
       throw new HttpException('User already exists', HttpStatus.CONFLICT);
     }
 
-    if (data.type === Types.Staff) {
+    if (data.type === TypesEnum.Staff) {
       return this.createStaff(data);
     }
 
-    if (data.type === Types.Business) {
+    if (data.type === TypesEnum.Business) {
       return this.createBusiness(data);
     }
+
+    return this.createUser(data);
+  }
+
+  async loginUser(data: LoginUserDto): Promise<User & { accessToken: string }> {
+    if (!data) {
+      throw new HttpException(
+        'The given data is invalid',
+        HttpStatus.UNPROCESSABLE_ENTITY,
+      );
+    }
+
+    const userExists = await this.findUserByEmail(data.email);
+
+    if (!userExists) {
+      // Intentionally keeping log in error details vague to disuade attackers from guessing right in most cases
+      throw new BadRequestException('Invalid login details');
+    }
+
+    const checkPassword = await compare(data.password, userExists.password);
+
+    if (!checkPassword) {
+      throw new BadRequestException('Invalid login details');
+    }
+
+    const accessToken = sign(
+      {
+        id: userExists.id,
+      },
+      getters.getConfigService().get('ACCESS_TOKEN_SECRET'),
+      {
+        expiresIn: '2h',
+      },
+    );
+
+    return {
+      ...userExists,
+      accessToken,
+    };
   }
 }

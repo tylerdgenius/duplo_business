@@ -4,11 +4,10 @@ import { UserService } from './user.service';
 import { userProviders } from './user.provider';
 import { DatabaseModule } from 'src/database/database.module';
 import { OrganizationModule } from '../organization';
-import { StaffModule } from '../staff';
 
 @Module({
   controllers: [UserController],
-  imports: [DatabaseModule, OrganizationModule, StaffModule],
+  imports: [DatabaseModule, OrganizationModule],
   providers: [...userProviders, UserService],
   exports: [UserService],
 })

@@ -1,5 +1,5 @@
 import { Body, Controller, Post, ValidationPipe } from '@nestjs/common';
-import { CreateUserDto } from 'src/dtos';
+import { CreateUserDto, LoginUserDto } from 'src/dtos';
 import { getters, routes } from 'src/helpers';
 import { ResponseObject } from 'src/models';
 import { UserService } from './user.service';
@@ -21,6 +21,20 @@ export class UserController {
       code: 200,
       message: 'Successfully registered user',
       payload: registeredUser,
+      status: true,
+    };
+  }
+
+  @Post(routes.v1.user.login)
+  async loginUser(
+    @Body(new ValidationPipe()) data: LoginUserDto,
+  ): Promise<ResponseObject<User>> {
+    const loggedInUser = await this.userService.loginUser(data);
+
+    return {
+      code: 200,
+      message: 'Successfully logged user in',
+      payload: loggedInUser,
       status: true,
     };
   }

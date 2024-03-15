@@ -11,18 +11,16 @@ export class ValidationExceptionFilter implements ExceptionFilter {
     let error = {};
     let message = 'An error occurred';
 
-    if (exception && exception.getStatus) {
+    if (exception?.getStatus) {
       status = exception.getStatus();
       message = 'Internal Server Error';
     }
 
-    if (exception && exception.response && exception.response.message) {
-      error = exception.response.message;
+    if (exception) {
+      error = [exception?.response?.message];
     }
 
-    if (exception) {
-      error = exception.response;
-    }
+    console.log(exception);
 
     response.status(status).json({
       status: false,

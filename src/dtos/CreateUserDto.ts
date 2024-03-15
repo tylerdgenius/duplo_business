@@ -3,31 +3,20 @@ import {
   IsEmail,
   IsIn,
   IsNotEmpty,
+  IsNumber,
   IsOptional,
   IsString,
   IsStrongPassword,
 } from 'class-validator';
-import { Types } from 'src/enums';
+import { TypesEnum } from 'src/enums';
 
 export class CreateUserDto {
   @ApiProperty({
     required: true,
-    description: 'This property identifies the users name',
-  })
-  @IsNotEmpty({
-    message: 'Name is required',
-  })
-  @IsString({
-    message: 'Name has to be of type string',
-  })
-  name: string;
-
-  @ApiProperty({
-    required: true,
     description: 'This property identifies the users type',
   })
-  @IsIn([Types.Business, Types.Staff], {
-    message: 'Type has to be either "business" or "staff"',
+  @IsIn([TypesEnum.Business, TypesEnum.Staff, TypesEnum.User], {
+    message: 'Type has to be either "business" or "staff" or "user"',
   })
   @IsNotEmpty({
     message: 'Type is required',
@@ -87,10 +76,11 @@ export class CreateUserDto {
   @ApiProperty({
     required: false,
     description:
-      'This property identifies the organization reference code when registering as a staff',
+      'This property identifies the organization id when registering as a staff',
   })
   @IsOptional()
-  organizationReference?: string;
+  @IsNumber()
+  organizationId?: number;
 
   @ApiProperty({
     required: false,

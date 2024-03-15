@@ -1,4 +1,5 @@
-export enum Types {
+export enum TypesEnum {
   Business = 'business',
   Staff = 'staff',
+  User = 'user',
 }

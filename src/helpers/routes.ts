@@ -5,6 +5,7 @@ export const routes = {
     user: {
       entry: 'user',
       create: 'create',
+      login: 'login',
     },
     product: {
       entry: 'product',
