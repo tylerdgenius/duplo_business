@@ -4,12 +4,24 @@ import {
   Column,
   CreateDateColumn,
 } from 'typeorm';
-import { IsDate, IsNotEmpty, IsString } from 'class-validator';
+import { IsDate, IsNotEmpty, IsString, IsUUID } from 'class-validator';
 
 @Entity()
 export class Organization {
   @PrimaryGeneratedColumn()
   id: number;
+
+  @Column()
+  @IsNotEmpty({
+    message: 'Public id is required',
+  })
+  @IsString({
+    message: 'Public id must be of type string to proceed',
+  })
+  @IsUUID('4', {
+    message: 'Public id must be a valid uuid',
+  })
+  publicId: string;
 
   @Column()
   @IsNotEmpty()

@@ -7,12 +7,28 @@ export class ValidationExceptionFilter implements ExceptionFilter {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
 
-    const status = exception.getStatus() || 500;
+    let status = 500;
+    let error = {};
+    let message = 'An error occurred';
+
+    if (exception && exception.getStatus) {
+      status = exception.getStatus();
+      message = 'Internal Server Error';
+    }
+
+    if (exception && exception.response && exception.response.message) {
+      error = exception.response.message;
+    }
+
+    if (exception) {
+      error = exception.response;
+    }
 
     response.status(status).json({
+      status: false,
       code: status,
-      message: exception.message || 'Internal Server Error',
-      payload: [{ error: exception.response.message }],
+      message,
+      payload: [{ error }],
     });
   }
 }

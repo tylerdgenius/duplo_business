@@ -8,5 +8,6 @@ import { DatabaseModule } from 'src/database/database.module';
   controllers: [OrganizationController],
   imports: [DatabaseModule],
   providers: [...organizationProviders, OrganizationService],
+  exports: [OrganizationService],
 })
 export class OrganizationModule {}

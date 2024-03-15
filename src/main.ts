@@ -26,6 +26,8 @@ async function bootstrap() {
 
   getters.getLogger().log(constants.APP.RUNNING_PORT + port);
 
+  app.enableCors();
+
   await app.listen(port);
 }
 bootstrap();
