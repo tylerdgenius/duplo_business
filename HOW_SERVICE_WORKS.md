@@ -141,3 +141,29 @@ If you need to create new permissions and add them to the available permissions 
 ```
 
 **NOTE:** Only a system admin with user type `system` and `create:permission` permission can hit this endpoint successfully
+
+### Order Creation
+
+Orders can be created by customers and anyone else with the create:order permission. Each order can contain multiple products by which the order must be processed with. They can also contain only 1 product in the array and the service will work just fine.
+
+An attached payload sample can be gotten for all endpoints via the swagger or the postman doc but for quick reference
+
+```bash
+
+{
+    "address": "Some string",
+    "products": [
+        {
+            id: number;
+            price: number;
+            quantity: number;
+        }
+    ]
+}
+```
+
+If you don't adhere to this standard, the api will reject your request.
+
+## Thanks
+
+That basically covers what was done in this iteration

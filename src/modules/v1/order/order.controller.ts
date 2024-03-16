@@ -79,7 +79,7 @@ export class OrderController {
     return {
       status: true,
       message: 'Successfully gotten all owned orders',
-      payload: order,
+      payload: { orders: order, totalCount: order.length },
     };
   }
 
