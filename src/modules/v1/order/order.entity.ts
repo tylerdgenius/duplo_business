@@ -26,6 +26,9 @@ export class Order {
   organization: Organization;
 
   @Column()
+  address: string;
+
+  @Column()
   unitPrice: number;
 
   @Column()

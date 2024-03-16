@@ -78,7 +78,7 @@ Once you have successfully seeded the database, you can proceed to create an acc
 
 **Staff** - This indicates that the user belongs to an organization a.k.a a business and that this users permissions will have to be created by the super admin upon using the system. All created staff are outfitted (once they register or are created) with a view permission for the following - `orders, products and users`. You require an organization id in order to register a user as this kind of user
 
-**User** - This indicates that the user belongs to no organization and is merely on the platform to do simple things like viewing products listed by the multitude of organizations and can create orders on said products.
+**User** - This indicates that the user belongs to no organization and is merely on the platform to do simple things like viewing products listed by the multitude of organizations and can create orders on said products. By default, this user is outfitted with the following permissions - `read:product`, `read:user`, `read:order`, `create:order` and `update:order`
 
 ### Permissions and Role Handling
 
