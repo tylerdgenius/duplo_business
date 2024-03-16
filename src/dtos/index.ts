@@ -7,3 +7,4 @@ export * from './CreateRoleDto';
 export * from './CreateRolePermissionDto';
 export * from './CreateProductDto';
 export * from './CreateOrderDto';
+export * from './CreateOrderProductsDto';

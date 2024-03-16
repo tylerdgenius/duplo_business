@@ -1,4 +1,5 @@
 import { OrderModule } from './order';
+import { OrderProductsModule } from './orderProducts';
 import { OrganizationModule } from './organization';
 import { PermissionModule } from './permission';
 import { ProductModule } from './product';
@@ -14,4 +15,5 @@ export const modules = [
   PermissionModule,
   RoleModule,
   RolePermissionsModule,
+  OrderProductsModule,
 ];

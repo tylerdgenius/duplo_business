@@ -12,6 +12,9 @@ import { User } from '../user/user.entity';
 import { Organization } from '../organization/organization.entity';
 import { ProductService } from '../product/product.service';
 import { StatusEnums } from 'src/enums';
+import { Product } from '../product/product.entity';
+import { OrderProductsService } from '../orderProducts/orderProducts.service';
+import axios from 'axios';
 
 @Injectable()
 export class OrderService {
@@ -19,24 +22,45 @@ export class OrderService {
     @Inject(constants.REPOSITORY.ORDER_REPOSITORY)
     private orderRepository: Repository<Order>,
     private readonly productService: ProductService,
+    private readonly orderProductsService: OrderProductsService,
   ) {}
 
   async createOrder(body: CreateOrderDto, user: User) {
-    const product = await this.productService.getProduct(body.productId);
+    let expectedTotalPrice: number;
+    let passedInTotalPrice: number;
+    let totalPrice = 0;
 
-    if (!product) {
-      throw new BadRequestException(
-        'Product not found. Cannot create order for non-existent product',
-      );
-    }
+    const allProducts: Product[] = [];
 
-    const expectedTotalPrice = product.price * body.quantity;
-    const passedInTotalPrice = body.unitPrice * body.quantity;
+    for (let i = 0; i < body.products.length; i++) {
+      const baseProduct = body.products[i];
 
-    if (expectedTotalPrice !== passedInTotalPrice) {
-      throw new ConflictException(
-        'Total price sent in does not match expected total price for that product',
-      );
+      if (!baseProduct.id || !baseProduct.price || !baseProduct.quantity) {
+        throw new BadRequestException(
+          'Each product must have an id property, a price property and a quantity property ',
+        );
+      }
+
+      const product = await this.productService.getProduct(baseProduct.id);
+
+      if (!product) {
+        throw new BadRequestException(
+          `Product with id - ${product.id} not found. Cannot create order for non-existent product`,
+        );
+      }
+
+      expectedTotalPrice = product.price * baseProduct.quantity;
+      passedInTotalPrice = baseProduct.price * baseProduct.quantity;
+
+      if (expectedTotalPrice !== passedInTotalPrice) {
+        throw new ConflictException(
+          'Total price sent in does not match expected total price for that product',
+        );
+      }
+
+      totalPrice = totalPrice + expectedTotalPrice;
+
+      allProducts.push(product);
     }
 
     const order = new Order();
@@ -46,15 +70,45 @@ export class OrderService {
     order.updatedAt = new Date();
     order.initiator = user;
     order.organization = user.organization;
-    order.product = product;
-    order.quantity = body.quantity;
     order.status = StatusEnums.Default;
-    order.totalPrice = expectedTotalPrice;
-    order.unitPrice = product.price;
+    order.totalPrice = totalPrice;
 
-    const savedOrder = this.orderRepository.save(order);
+    const savedOrder = await this.orderRepository.save(order);
 
-    return savedOrder;
+    const finalOrder = await this.createOrderToProductLink(
+      savedOrder,
+      allProducts,
+    );
+
+    try {
+      await this.logOrder(finalOrder, user);
+    } catch (error) {}
+
+    return finalOrder;
+  }
+
+  async createOrderToProductLink(order: Order, products: Product[]) {
+    for (const element of products) {
+      await this.orderProductsService.createOrderLink({
+        order,
+        product: element,
+      });
+    }
+
+    return order;
+  }
+
+  async logOrder(order: Order, user: User) {
+    const { data } = await axios.post(
+      'https://taxes.free.beeceptor.com/log-tax',
+      {
+        amount: order.totalPrice,
+        userEmail: user.email,
+        shippingAddress: order.address,
+      },
+    );
+
+    console.log(data);
   }
 
   async getCustomerOrders(user: User) {

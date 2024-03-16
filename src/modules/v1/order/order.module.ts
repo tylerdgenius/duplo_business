@@ -8,10 +8,17 @@ import { IsProtectedMiddleware } from 'src/middleware';
 import { getters, routes } from 'src/helpers';
 import { UserModule } from '../user';
 import { ProductModule } from '../product';
+import { OrderProductsModule } from '../orderProducts';
 
 @Module({
   controllers: [OrderController],
-  imports: [DatabaseModule, ProductModule, RolePermissionsModule, UserModule],
+  imports: [
+    DatabaseModule,
+    ProductModule,
+    RolePermissionsModule,
+    UserModule,
+    OrderProductsModule,
+  ],
   providers: [...orderProviders, OrderService],
 })
 export class OrderModule implements NestModule {

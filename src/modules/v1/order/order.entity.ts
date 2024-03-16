@@ -4,20 +4,18 @@ import {
   Column,
   CreateDateColumn,
   ManyToOne,
+  OneToMany,
 } from 'typeorm';
 import { StatusDto } from 'src/dtos';
 import { StatusEnums } from 'src/enums';
 import { Organization } from '../organization/organization.entity';
 import { User } from '../user/user.entity';
-import { Product } from '../product/product.entity';
+import { OrderProducts } from '../orderProducts/orderProducts.entity';
 
 @Entity()
 export class Order {
   @PrimaryGeneratedColumn()
   id: number;
-
-  @ManyToOne(() => Product, (product) => product.orders)
-  product: Product;
 
   @ManyToOne(() => User, (user) => user.orders)
   initiator: User;
@@ -25,17 +23,14 @@ export class Order {
   @ManyToOne(() => Organization, (organization) => organization.orders)
   organization: Organization;
 
+  @OneToMany(() => OrderProducts, (orderProducts) => orderProducts.order)
+  orderProducts: OrderProducts[];
+
   @Column()
   address: string;
 
   @Column()
-  unitPrice: number;
-
-  @Column()
   totalPrice: number;
-
-  @Column()
-  quantity: number;
 
   @Column({
     type: 'enum',

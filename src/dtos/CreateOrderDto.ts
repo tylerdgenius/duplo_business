@@ -1,49 +1,22 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsArray, IsNotEmpty, IsString } from 'class-validator';
 
 export class CreateOrderDto {
   @ApiProperty({
     required: true,
     description: 'This property details the identifier of the product',
   })
-  @IsString({
-    message: 'productId must be of type string',
-  })
   @IsNotEmpty({
-    message: 'productId is required',
+    message: 'products array is required',
   })
-  productId: number;
-
-  @ApiProperty({
-    required: true,
-    description: 'This property details the unit price of a single product',
+  @IsArray({
+    message: 'products property must be an array',
   })
-  @IsNumber(
-    {},
-    {
-      message: 'unitPrice must be of type number',
-    },
-  )
-  @IsNotEmpty({
-    message: 'unitPrice is required',
-  })
-  unitPrice: number;
-
-  @ApiProperty({
-    required: true,
-    description:
-      'This property details the total quantity of all products in this order',
-  })
-  @IsNumber(
-    {},
-    {
-      message: 'quantity must be of type number',
-    },
-  )
-  @IsNotEmpty({
-    message: 'quantity is required',
-  })
-  quantity: number;
+  products: {
+    id: number;
+    price: number;
+    quantity: number;
+  }[];
 
   @ApiProperty({
     required: true,
