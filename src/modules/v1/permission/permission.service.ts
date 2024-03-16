@@ -65,4 +65,74 @@ export class PermissionService {
       },
     });
   }
+
+  async getCustomerBasicPermissions() {
+    const permissions = await this.getAllViewPermissions();
+
+    const createOrderPermission = await this.findOne({
+      action: PermissionEnums.CreateOrder,
+    });
+
+    return permissions.concat(createOrderPermission);
+  }
+
+  async getSuperAdminPermissions() {
+    const data = await this.permissionRepository.find({
+      where: [
+        {
+          action: PermissionEnums.ReadOrder,
+        },
+        {
+          action: PermissionEnums.ReadProduct,
+        },
+        {
+          action: PermissionEnums.ReadUser,
+        },
+        {
+          action: PermissionEnums.ReadRole,
+        },
+
+        {
+          action: PermissionEnums.CreateOrder,
+        },
+        {
+          action: PermissionEnums.CreateProduct,
+        },
+        {
+          action: PermissionEnums.CreateUser,
+        },
+        {
+          action: PermissionEnums.CreateRole,
+        },
+
+        {
+          action: PermissionEnums.UpdateUser,
+        },
+        {
+          action: PermissionEnums.UpdateOrder,
+        },
+        {
+          action: PermissionEnums.UpdateProduct,
+        },
+        {
+          action: PermissionEnums.UpdateRole,
+        },
+
+        {
+          action: PermissionEnums.DeleteOrder,
+        },
+        {
+          action: PermissionEnums.DeleteProduct,
+        },
+        {
+          action: PermissionEnums.DeleteRole,
+        },
+        {
+          action: PermissionEnums.DeleteUser,
+        },
+      ],
+    });
+
+    return data;
+  }
 }

@@ -107,7 +107,7 @@ Each business has the ability to create roles that can mix and match any of the 
 2. Business A can attach permissions like - Create Product, Create User, View User, View Product
 3. Business A can create a user called "Managing Director" and assign the role of ADMIN to said user
 
-If an when any of the above happens, the user will effectively be able to login and also be able to use resources that fall under the purview of his/her permission scope
+If and when any of the above happens, the user will effectively be able to login and also be able to use resources that fall under the purview of his/her permission scope
 
 At any given time, **a super admin account can remove all these capabilities for the users in that role or create new roles to match the policies they would prefer for those users to have**
 

@@ -1,4 +1,5 @@
 import { Controller } from '@nestjs/common';
+import { getters, routes } from 'src/helpers';
 
-@Controller('organization')
+@Controller(getters.getRoute(routes.organization.entry))
 export class OrganizationController {}

@@ -5,18 +5,12 @@ import { DatabaseModule } from 'src/database/database.module';
 import { productProviders } from './product.provider';
 import { UserModule } from '../user';
 import { IsProtectedMiddleware } from 'src/middleware';
-import { OrganizationModule } from '../organization';
 import { getters, routes } from 'src/helpers';
 import { RolePermissionsModule } from '../rolePermissions';
 
 @Module({
   controllers: [ProductController],
-  imports: [
-    DatabaseModule,
-    UserModule,
-    OrganizationModule,
-    RolePermissionsModule,
-  ],
+  imports: [DatabaseModule, UserModule, RolePermissionsModule],
   providers: [...productProviders, ProductService],
 })
 export class ProductModule implements NestModule {

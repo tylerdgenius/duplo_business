@@ -3,10 +3,11 @@ import { PermissionService } from './permission.service';
 import { permissionProviders } from './permission.provider';
 import { DatabaseModule } from 'src/database/database.module';
 import { PermissionController } from './permission.controller';
+import { RolePermissionsModule } from '../rolePermissions';
 
 @Module({
   controllers: [PermissionController],
-  imports: [DatabaseModule],
+  imports: [DatabaseModule, RolePermissionsModule],
   providers: [...permissionProviders, PermissionService],
   exports: [PermissionService],
 })

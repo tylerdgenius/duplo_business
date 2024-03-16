@@ -15,4 +15,13 @@ export enum PermissionEnums {
   UpdateRole = 'update:role',
   DeleteRole = 'delete:role',
   ReadRole = 'read:role',
+  // Superadmin only permissions
+  CreateOrganization = 'create:organization',
+  UpdateOrganization = 'update:organization',
+  ReadOrganization = 'read:organization',
+  DeleteOrganization = 'delete:organization',
+  CreatePermission = 'create:permission',
+  ReadPermission = 'read:permission',
+  DeletePermission = 'delete:permission',
+  UpdatePermission = 'update:permission',
 }

@@ -15,9 +15,13 @@ export class CreateUserDto {
     required: true,
     description: 'This property identifies the users type',
   })
-  @IsIn([TypesEnum.Business, TypesEnum.Staff, TypesEnum.User], {
-    message: 'Type has to be either "business" or "staff" or "user"',
-  })
+  @IsIn(
+    [TypesEnum.Business, TypesEnum.Staff, TypesEnum.User, TypesEnum.System],
+    {
+      message:
+        'Type has to be either "business" or "staff" or "user" or "system"',
+    },
+  )
   @IsNotEmpty({
     message: 'Type is required',
   })

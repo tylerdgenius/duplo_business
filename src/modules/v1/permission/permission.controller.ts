@@ -29,6 +29,14 @@ const allPermissions = [
   PermissionEnums.UpdateRole,
   PermissionEnums.ReadRole,
   PermissionEnums.DeleteRole,
+  PermissionEnums.CreateOrganization,
+  PermissionEnums.UpdateOrganization,
+  PermissionEnums.ReadOrganization,
+  PermissionEnums.DeleteOrganization,
+  PermissionEnums.CreatePermission,
+  PermissionEnums.UpdatePermission,
+  PermissionEnums.ReadPermission,
+  PermissionEnums.DeletePermission,
 ];
 
 @Controller(getters.getRoute(routes.permissions.entry))

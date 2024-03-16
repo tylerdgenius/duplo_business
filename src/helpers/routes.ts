@@ -4,6 +4,7 @@ export const routes = {
     entry: 'user',
     create: 'create',
     login: 'login',
+    system: 'system/generate',
   },
   product: {
     entry: 'product',
@@ -15,6 +16,7 @@ export const routes = {
   },
   organization: {
     entry: 'organization',
+    createDefault: 'create',
   },
   order: {
     entry: 'order',
@@ -24,7 +26,7 @@ export const routes = {
   },
   permissions: {
     entry: 'permissions',
-    create: 'create',
+    createDefault: 'create',
     getAll: 'all',
     getSingle: 'single/:id',
     getViews: 'views/all',

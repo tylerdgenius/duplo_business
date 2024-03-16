@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ConflictException,
   HttpException,
   HttpStatus,
   Inject,
@@ -35,6 +36,14 @@ export class UserService {
     return this.userRepository.findOne({
       where: {
         email,
+      },
+    });
+  }
+
+  async findSystemAdmin() {
+    return this.userRepository.findOne({
+      where: {
+        type: TypesEnum.System,
       },
     });
   }
@@ -128,6 +137,49 @@ export class UserService {
     return savedUser;
   }
 
+  async createSystemAdmin(data: CreateUserDto) {
+    if (!data.organizationName) {
+      throw new BadRequestException(
+        'Organization name is required when creating a business account',
+      );
+    }
+
+    const organization = await this.organizationService.findOne({
+      name: data.organizationName,
+    });
+
+    if (organization) {
+      throw new ConflictException(
+        'Organization already exists in database. Kindly provide a unique organization name',
+      );
+    }
+
+    const confirmThatSystemAdminExists = await this.findSystemAdmin();
+
+    if (confirmThatSystemAdminExists) {
+      throw new ConflictException(
+        'System only permits for one system admin to be on each instance of the product per time',
+      );
+    }
+
+    const user = await this.createUser(data);
+
+    const createdOrganization =
+      await this.organizationService.createOrganization({
+        organizationName: data.organizationName,
+      });
+
+    const role =
+      await this.roleService.createSystemAdminRole(createdOrganization);
+
+    user.role = role;
+    user.organization = createdOrganization;
+
+    const savedUser = await this.userRepository.save(user);
+
+    return savedUser;
+  }
+
   async registerUser(data: CreateUserDto) {
     if (!data) {
       throw new HttpException(
@@ -148,6 +200,10 @@ export class UserService {
 
     if (data.type === TypesEnum.Business) {
       return this.createBusiness(data);
+    }
+
+    if (data.type === TypesEnum.System) {
+      return this.createSystemAdmin(data);
     }
 
     const savedUser = await this.createUser(data);

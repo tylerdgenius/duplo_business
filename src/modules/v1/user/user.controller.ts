@@ -34,4 +34,15 @@ export class UserController {
       status: true,
     };
   }
+
+  @Post(routes.user.system)
+  async generateSystemAdmin(@Body(new ValidationPipe()) data: CreateUserDto) {
+    const registeredUser = await this.userService.registerUser(data);
+
+    return {
+      message: 'Successfully registered system admin',
+      payload: registeredUser,
+      status: true,
+    };
+  }
 }
