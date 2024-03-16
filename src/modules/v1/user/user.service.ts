@@ -56,9 +56,7 @@ export class UserService {
     user.createdAt = new Date();
     user.updatedAt = new Date();
 
-    const savedUser = await this.userRepository.save(user);
-
-    return savedUser;
+    return user;
   }
 
   async createStaff(data: CreateUserDto) {
@@ -69,7 +67,7 @@ export class UserService {
       );
     }
 
-    const savedUser = await this.createUser(data);
+    const user = await this.createUser(data);
 
     const organization = await this.organizationService.findOne({
       id: data.organizationId,
@@ -82,13 +80,13 @@ export class UserService {
       );
     }
 
-    savedUser.organization = organization;
+    user.organization = organization;
 
     const role = await this.roleService.createViewRole(organization);
 
-    savedUser.role = role;
+    user.role = role;
 
-    this.userRepository.save(savedUser);
+    const savedUser = await this.userRepository.save(user);
 
     return savedUser;
   }
@@ -116,7 +114,6 @@ export class UserService {
 
     const createdOrganization =
       await this.organizationService.createOrganization({
-        baseUser: user,
         organizationName: data.organizationName,
       });
 
@@ -124,12 +121,11 @@ export class UserService {
       await this.roleService.createSuperAdminRole(createdOrganization);
 
     user.role = role;
-
     user.organization = createdOrganization;
 
-    this.userRepository.save(user);
+    const savedUser = await this.userRepository.save(user);
 
-    return user;
+    return savedUser;
   }
 
   async registerUser(data: CreateUserDto) {
@@ -154,7 +150,9 @@ export class UserService {
       return this.createBusiness(data);
     }
 
-    return this.createUser(data);
+    const savedUser = await this.createUser(data);
+
+    return savedUser;
   }
 
   async loginUser(data: LoginUserDto): Promise<User & { accessToken: string }> {
@@ -188,9 +186,20 @@ export class UserService {
       },
     );
 
+    delete userExists.password;
+
     return {
       ...userExists,
       accessToken,
     };
+  }
+
+  async findUserAndJoin(filter: Partial<User>) {
+    return this.userRepository
+      .createQueryBuilder('user')
+      .leftJoinAndSelect('user.organization', 'organization')
+      .leftJoinAndSelect('user.role', 'role')
+      .where('user.id = :id', filter)
+      .getOne();
   }
 }

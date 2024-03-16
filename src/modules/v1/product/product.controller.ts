@@ -1,28 +1,81 @@
 import {
+  Body,
   Controller,
   Get,
   Param,
   Post,
   Req,
+  UseGuards,
   ValidationPipe,
 } from '@nestjs/common';
-import { routes } from 'src/helpers';
+import { getters, routes } from 'src/helpers';
 import { ResponseObject } from 'src/models';
 import { Product } from './product.entity';
 import { ProductService } from './product.service';
 import { AuthBearer } from 'src/decorators';
+import { CreateProductDto } from 'src/dtos';
+import { CanCreateProductGuard } from 'src/guards';
+import { RolePermissionsService } from '../rolePermissions/rolePermissions.service';
 
-@Controller(routes.v1.product.entry)
+@Controller(getters.getRoute(routes.product.entry))
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
 
-  @Post(routes.v1.product.create)
-  createProduct() {}
+  @Post(routes.product.create)
+  @UseGuards(CanCreateProductGuard)
+  async createProduct(@Body(new ValidationPipe()) body: CreateProductDto) {
+    const product = await this.productService.createProduct(body);
 
-  @Get(routes.v1.product.getAll)
-  getOwnedProducts() {}
+    return {
+      status: true,
+      message: 'Successfully created product',
+      payload: product,
+    };
+  }
 
-  @Get(routes.v1.product.getSingle)
+  @Get(routes.product.getAll)
+  @AuthBearer()
+  async getAllProducts() {
+    const products = await this.productService.getAllProducts();
+
+    return {
+      status: true,
+      message: 'Successfully fetched all products',
+      payload: products,
+    };
+  }
+
+  @Get(routes.product.getOwned)
+  @AuthBearer()
+  async getOwnedProducts(
+    @Param('id', new ValidationPipe()) organizationId: number,
+  ) {
+    const products =
+      await this.productService.getProductsByOrganizationId(organizationId);
+
+    return {
+      status: true,
+      message: 'Successfully fetched owned products',
+      payload: products,
+    };
+  }
+
+  @Get(routes.product.getInitiator)
+  @AuthBearer()
+  async getInitiatorProducts(
+    @Param('id', new ValidationPipe()) initiatorId: number,
+  ) {
+    const products =
+      await this.productService.getProductsByInitiator(initiatorId);
+
+    return {
+      status: true,
+      message: 'Successfully fetched user posted products',
+      payload: products,
+    };
+  }
+
+  @Get(routes.product.getSingle)
   @AuthBearer()
   async getSingleProduct(
     @Req() req: Request,

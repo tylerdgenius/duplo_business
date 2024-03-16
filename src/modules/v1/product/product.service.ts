@@ -8,6 +8,7 @@ import { constants } from 'src/helpers';
 import { Repository } from 'typeorm';
 import { Product } from './product.entity';
 import { UserService } from '../user/user.service';
+import { CreateProductDto } from 'src/dtos';
 
 @Injectable()
 export class ProductService {
@@ -17,7 +18,25 @@ export class ProductService {
     private readonly userService: UserService,
   ) {}
 
-  getProductsByOrganizationId(organizationId: string) {}
+  async getProductsByOrganizationId(organizationId: number) {
+    return this.productRepository.find({
+      where: {
+        organization: {
+          id: organizationId,
+        },
+      },
+    });
+  }
+
+  async getProductsByInitiator(initiatorId: number) {
+    return this.productRepository.find({
+      where: {
+        initiator: {
+          id: initiatorId,
+        },
+      },
+    });
+  }
 
   async getProduct(productId: number) {
     if (!productId) {
@@ -38,4 +57,10 @@ export class ProductService {
 
     return product;
   }
+
+  async getAllProducts() {
+    return this.productRepository.find();
+  }
+
+  async createProduct(body: CreateProductDto) {}
 }

@@ -5,3 +5,4 @@ export * from './LoginUserDto';
 export * from './CreatePermissionDto';
 export * from './CreateRoleDto';
 export * from './CreateRolePermissionDto';
+export * from './CreateProductDto';

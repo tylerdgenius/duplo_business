@@ -1,7 +1,7 @@
 import { Controller, Get, Post } from '@nestjs/common';
 import { PermissionService } from './permission.service';
 import { PermissionEnums } from 'src/enums';
-import { routes } from 'src/helpers';
+import { getters, routes } from 'src/helpers';
 
 const allPermissions = [
   PermissionEnums.CreateOrder,
@@ -18,15 +18,15 @@ const allPermissions = [
   PermissionEnums.UpdateUser,
 ];
 
-@Controller(routes.v1.permissions.entry)
+@Controller(getters.getRoute(routes.permissions.entry))
 export class PermissionController {
   constructor(private readonly permissionService: PermissionService) {}
 
   @Post('create')
   async createPermissions() {
-    for (let i = 0; i <= allPermissions.length; i++) {
+    for (const element of allPermissions) {
       await this.permissionService.createPermission({
-        action: allPermissions[i],
+        action: element,
       });
     }
 
@@ -37,7 +37,7 @@ export class PermissionController {
     };
   }
 
-  @Get(routes.v1.permissions.getAll)
+  @Get(routes.permissions.getAll)
   async getAllPermissions() {
     const permissions = await this.permissionService.getAllPermissions();
 
@@ -48,7 +48,7 @@ export class PermissionController {
     };
   }
 
-  @Get(routes.v1.permissions.getViews)
+  @Get(routes.permissions.getViews)
   async getAllViewPermissions() {
     const permissions = await this.permissionService.getAllViewPermissions();
 

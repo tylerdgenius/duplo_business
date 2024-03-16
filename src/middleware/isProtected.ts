@@ -1,4 +1,9 @@
-import { HttpStatus, Injectable, NestMiddleware } from '@nestjs/common';
+import {
+  HttpStatus,
+  Injectable,
+  NestMiddleware,
+  NotFoundException,
+} from '@nestjs/common';
 import { NextFunction, Request, Response } from 'express';
 import { verify } from 'jsonwebtoken';
 import { getters } from 'src/helpers';
@@ -7,7 +12,7 @@ import { UserService } from 'src/modules/v1/user/user.service';
 @Injectable()
 export class IsProtectedMiddleware implements NestMiddleware {
   constructor(private readonly userService: UserService) {}
-  use(req: Request, res: Response, next: NextFunction) {
+  async use(req: Request, res: Response, next: NextFunction) {
     try {
       const token = req.headers.authorization;
 
@@ -26,7 +31,17 @@ export class IsProtectedMiddleware implements NestMiddleware {
         getters.getConfigService().get('ACCESS_TOKEN_SECRET'),
       );
 
-      req['initiatorId'] = verifiedToken['id'];
+      const user = await this.userService.findUserAndJoin({
+        id: verifiedToken['id'],
+      });
+
+      if (!user) {
+        throw new NotFoundException('Cannot verify user. Kindly try again');
+      }
+
+      console.log({ verifiedToken, user });
+
+      req['user'] = user;
 
       next();
     } catch (error) {

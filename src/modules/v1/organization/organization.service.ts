@@ -2,7 +2,6 @@ import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { constants } from 'src/helpers';
 import { Repository } from 'typeorm';
 import { Organization } from './organization.entity';
-import { User } from '../user/user.entity';
 
 @Injectable()
 export class OrganizationService {
@@ -19,10 +18,7 @@ export class OrganizationService {
     });
   }
 
-  async createOrganization(organizationData: {
-    baseUser: User;
-    organizationName: string;
-  }) {
+  async createOrganization(organizationData: { organizationName: string }) {
     try {
       if (!organizationData) {
         throw new HttpException(
@@ -34,7 +30,6 @@ export class OrganizationService {
       const organization = new Organization();
 
       organization.name = organizationData.organizationName;
-      organization.baseUser = organizationData.baseUser;
       organization.createdAt = new Date();
       organization.updatedAt = new Date();
 

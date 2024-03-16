@@ -47,10 +47,10 @@ export class RoleService {
       organization,
     });
 
-    for (let i = 0; i <= permissions.length; i++) {
+    for (const element of permissions) {
       await this.rolePermissionsService.createRolePermission({
         role,
-        permission: permissions[i],
+        permission: element,
       });
     }
 
@@ -67,10 +67,10 @@ export class RoleService {
       organization,
     });
 
-    for (let i = 0; i <= permissions.length; i++) {
+    for (const element of permissions) {
       await this.rolePermissionsService.createRolePermission({
         role,
-        permission: permissions[i],
+        permission: element,
       });
     }
 

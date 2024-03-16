@@ -4,7 +4,6 @@ import {
   Column,
   CreateDateColumn,
   OneToMany,
-  OneToOne,
 } from 'typeorm';
 import { Product } from '../product/product.entity';
 import { Order } from '../order/order.entity';
@@ -18,9 +17,6 @@ export class Organization {
 
   @Column()
   name: string;
-
-  @OneToOne(() => User, (user) => user.organization)
-  baseUser: User;
 
   @OneToMany(() => Product, (product) => product.organization)
   products: Product[];

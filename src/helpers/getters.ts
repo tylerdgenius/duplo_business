@@ -34,10 +34,25 @@ const getRoutesByAppVersion = () => {
   return routes[allRoutesConversion[appVersion]];
 };
 
+const getRoute = (extendedRoutes: string[] | string) => {
+  let returnedRoute = `${routes.entry}/v1/`; // This runs before the config service is injected so i will have to find a way to still grab the current app version out of my env later
+
+  if (Array.isArray(extendedRoutes)) {
+    returnedRoute = `${returnedRoute}${extendedRoutes.join('/')}`;
+  }
+
+  if (typeof extendedRoutes === 'string') {
+    returnedRoute = `${returnedRoute}${extendedRoutes}`;
+  }
+
+  return returnedRoute;
+};
+
 export const getters = {
   getDevelopmentStatus,
   getConfigService,
   getLogger,
   getCurrentAppVersion,
   getRoutesByAppVersion,
+  getRoute,
 };

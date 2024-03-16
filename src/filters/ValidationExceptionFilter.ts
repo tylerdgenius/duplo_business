@@ -16,7 +16,11 @@ export class ValidationExceptionFilter implements ExceptionFilter {
       message = exception?.response?.error || 'Internal server error';
     }
 
-    if (exception) {
+    if (exception && exception.response && !exception.response.message) {
+      error = [exception?.response];
+    }
+
+    if (exception && exception?.response?.message) {
       error = [exception?.response?.message];
     }
 

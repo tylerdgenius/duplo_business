@@ -1,15 +1,15 @@
 import { Body, Controller, Post, ValidationPipe } from '@nestjs/common';
 import { CreateUserDto, LoginUserDto } from 'src/dtos';
-import { routes } from 'src/helpers';
+import { getters, routes } from 'src/helpers';
 import { ResponseObject } from 'src/models';
 import { UserService } from './user.service';
 import { User } from './user.entity';
 
-@Controller('user')
+@Controller(getters.getRoute(routes.user.entry))
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @Post(routes.v1.user.create)
+  @Post(routes.user.create)
   async registerUser(
     @Body(new ValidationPipe()) data: CreateUserDto,
   ): Promise<ResponseObject<User>> {
@@ -22,7 +22,7 @@ export class UserController {
     };
   }
 
-  @Post(routes.v1.user.login)
+  @Post(routes.user.login)
   async loginUser(
     @Body(new ValidationPipe()) data: LoginUserDto,
   ): Promise<ResponseObject<User>> {

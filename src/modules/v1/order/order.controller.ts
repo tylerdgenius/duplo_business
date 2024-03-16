@@ -1,5 +1,5 @@
 import { Controller } from '@nestjs/common';
-import { routes } from 'src/helpers';
+import { getters, routes } from 'src/helpers';
 
-@Controller(routes.v1.order.entry)
+@Controller(getters.getRoute([routes.order.entry]))
 export class OrderController {}
