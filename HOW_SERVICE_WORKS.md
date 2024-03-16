@@ -17,6 +17,8 @@ DATABASE_USENAME=
 DATEBASE_PASSWORD=
 DATABASE_NAME=
 DATABASE_TYPE=
+ACCESS_TOKEN_SECRET=
+PASSWORD_ENCRYPTION_SALT=
 ```
 
 Note: Each variable should retain the exact naming inference as the system is expecting that exact naming in order to bootstrap itself. Keep in mind that the appropriate data types are postgres, mysql or as otherwise defined by the typeorm on the nestjs website
@@ -46,3 +48,62 @@ You register this module in the version loader
 Run the service and before starting any registration, it is crucial to seed the database as this populates all the necessary permissions needed to work with the system
 
 The appropriate endpoint to hit is {{BASE_URL}}/permissions/create
+
+### Account Creation
+
+Once you have successfully seeded the database, you can proceed to create an account. There are currently 3 allowed account types - business, staff, user
+
+Business - This indicates that this user is a business owner and that account will be the primary account hoisted with the super admin status for that business. Basically, this user can do everything involved in managing the business.
+
+Staff - This indicates that the user belongs to an organization a.k.a a business and that this users permissions will have to be created by the super admin upon using the system. All created staff are outfitted with a view permission for the following - orders, products and users. You require an organization id in order to register a user as this
+
+User - This indicates that the user belongs to no organization and is merely on the platform to do simple things like viewing products listed by the multitude of organizations and can create orders on said products.
+
+### Permissions and Role Handling
+
+There are currently 12 different default permissions based on actions that can be taken on the system
+
+- Create Order
+- Update Order
+- Read Order
+- Delete Order
+- Create Product
+- Update Product
+- Delete Product
+- Read Product
+- Create User
+- Update User
+- Read User
+- Delete User
+- Create Role
+- Read Role
+- Update Role
+- Delete Role
+
+Each business has the ability to create roles that can mix and match any of the above stated permissions e.g
+
+Business A creates a role called MODERATOR
+Business A can attach permissions like - Create Product, Create User, View User, View Product
+Business A can create a user called "Managing Director" and assign the role of ADMIN to said user
+
+If an when any of the above happens, the user will effectively be able to login and also be able to use resources that fall under the purview of his/her permissions
+
+At any given time, a super admin account can remove all these capabilities for the users in that role or create new roles to match the policies they would prefer for those users to have
+
+### Product Creation
+
+Only users with the permission - create:product - can actively create products on the system and one other key requirement for this to be successful is for the user in question to have an attached organization as products are tied to organizations by default
+
+This means:
+
+- Customers can not create products
+- Only approved staff can create products
+- All super admins of their respective organizations can create products
+
+### Permission Addition
+
+In light of the event that users of this service might need to create new permissions and add them to the available permissions list, you can do so via the route
+
+{{BASE_URL}}/{{API_VERSION}}/permissions/add
+
+NOTE: Only a user with the header - { x-token: x-allow-6783 } - will be able to access this resource. Without it all request to this resource will be either unauthorized or forbidden. The reasoning behind this is that, we don't want to taint the sanctity of our database with permissions that are useless. Intentionally, did not add a way to create new header tokens because this project purely for demo. Keep in mind `x-token` is the key and `x-allow-6783` is the value

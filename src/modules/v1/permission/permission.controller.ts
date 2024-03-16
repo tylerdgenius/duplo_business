@@ -1,7 +1,16 @@
-import { Controller, Get, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  UseGuards,
+  ValidationPipe,
+} from '@nestjs/common';
 import { PermissionService } from './permission.service';
 import { PermissionEnums } from 'src/enums';
 import { getters, routes } from 'src/helpers';
+import { CreatePermissionDto } from 'src/dtos';
+import { CanAddPermissionGuard } from 'src/guards';
 
 const allPermissions = [
   PermissionEnums.CreateOrder,
@@ -16,6 +25,10 @@ const allPermissions = [
   PermissionEnums.UpdateOrder,
   PermissionEnums.UpdateProduct,
   PermissionEnums.UpdateUser,
+  PermissionEnums.CreateRole,
+  PermissionEnums.UpdateRole,
+  PermissionEnums.ReadRole,
+  PermissionEnums.DeleteRole,
 ];
 
 @Controller(getters.getRoute(routes.permissions.entry))
@@ -55,6 +68,20 @@ export class PermissionController {
     return {
       status: true,
       message: 'Successfully gotten all base view permissions',
+      payload: permissions,
+    };
+  }
+
+  @Post(routes.permissions.add)
+  @UseGuards(CanAddPermissionGuard)
+  async addPermission(@Body(new ValidationPipe()) body: CreatePermissionDto) {
+    const permissions = await this.permissionService.createPermission({
+      action: body.action,
+    });
+
+    return {
+      status: true,
+      message: 'Successfully added permission to global available permissions',
       payload: permissions,
     };
   }

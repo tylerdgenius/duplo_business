@@ -21,9 +21,13 @@ export class CreatePermissionDto {
       PermissionEnums.ReadUser,
       PermissionEnums.DeleteUser,
       PermissionEnums.UpdateUser,
+      PermissionEnums.CreateRole,
+      PermissionEnums.UpdateRole,
+      PermissionEnums.ReadRole,
+      PermissionEnums.DeleteRole,
     ],
     {
-      message: `Allowed permission actions are limited to - ${PermissionEnums.CreateOrder}, ${PermissionEnums.CreateProduct}, ${PermissionEnums.DeleteOrder}, ${PermissionEnums.DeleteProduct}, ${PermissionEnums.ReadOrder}, ${PermissionEnums.ReadProduct}, ${PermissionEnums.UpdateOrder}, ${PermissionEnums.UpdateProduct}, ${PermissionEnums.ReadUser}, ${PermissionEnums.CreateUser}, ${PermissionEnums.UpdateUser}, ${PermissionEnums.DeleteUser} -`,
+      message: `Allowed permission actions are limited to - ${PermissionEnums.CreateOrder}, ${PermissionEnums.CreateProduct}, ${PermissionEnums.DeleteOrder}, ${PermissionEnums.DeleteProduct}, ${PermissionEnums.ReadOrder}, ${PermissionEnums.ReadProduct}, ${PermissionEnums.UpdateOrder}, ${PermissionEnums.UpdateProduct}, ${PermissionEnums.ReadUser}, ${PermissionEnums.CreateUser}, ${PermissionEnums.UpdateUser}, ${PermissionEnums.DeleteUser}, ${PermissionEnums.ReadRole}, ${PermissionEnums.CreateRole}, ${PermissionEnums.UpdateRole}, ${PermissionEnums.DeleteRole} -`,
     },
   )
   @IsNotEmpty({

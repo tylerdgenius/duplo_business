@@ -28,6 +28,7 @@ export const routes = {
     getAll: 'all',
     getSingle: 'single/:id',
     getViews: 'views/all',
+    add: 'add',
   },
   roles: {
     entry: 'roles',
