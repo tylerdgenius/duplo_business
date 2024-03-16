@@ -23,6 +23,7 @@ export class ProductController {
   constructor(private readonly productService: ProductService) {}
 
   @Post(routes.product.create)
+  @AuthBearer()
   @UseGuards(CanCreateProductGuard)
   async createProduct(
     @Req() req: Request,
@@ -40,7 +41,6 @@ export class ProductController {
   }
 
   @Get(routes.product.getAll)
-  @AuthBearer()
   async getAllProducts() {
     const products = await this.productService.getAllProducts();
 

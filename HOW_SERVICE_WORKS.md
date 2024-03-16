@@ -67,7 +67,7 @@ It is crucial to seed the database as this populates all the necessary permissio
 You don't need to do anything other than hit the seeding endpoint. The appropriate endpoint to hit for database seeding is
 
 ```bash
-{{BASE_URL}}/permissions/create
+{{BASE_URL}}/permissions/create/defaults
 ```
 
 ### Account Creation
@@ -82,7 +82,7 @@ Once you have successfully seeded the database, you can proceed to create an acc
 
 ### Permissions and Role Handling
 
-There are currently 16 different default permissions based on actions that can be taken on the system
+There are currently 24 different default permissions based on actions that can be taken on the system
 
 - Create Order
 - Update Order
@@ -100,6 +100,17 @@ There are currently 16 different default permissions based on actions that can b
 - Read Role
 - Update Role
 - Delete Role
+- Read permission
+
+`The permissions below are only given to super admins`
+
+- Create Permission
+- Update Permission
+- Delete Permission
+- Create Organization
+- Update Organization
+- Read Organization
+- Delete Organization
 
 Each business has the ability to create roles that can mix and match any of the above stated permissions e.g
 
@@ -129,6 +140,4 @@ If you need to create new permissions and add them to the available permissions 
 {{BASE_URL}}/{{API_VERSION}}/permissions/add
 ```
 
-**NOTE:** Only a user with the header - `{ x-token: x-allow-6783 }` - will be able to access this resource. Without it all request to this resource will be either unauthorized or forbidden.
-
-The reasoning behind this is that, we don't want to taint the sanctity of our database with permissions that are useless. Intentionally, I did not add a way to create new header token because this project is purely for demo. Keep in mind `x-token` is the key and `x-allow-6783` is the value
+**NOTE:** Only a system admin with user type `system` and `create:permission` permission can hit this endpoint successfully

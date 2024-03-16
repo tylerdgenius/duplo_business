@@ -94,7 +94,7 @@ export class RoleService {
     );
   }
 
-  async createUserBasicRole(organization: Organization) {
+  async createCustomerBasicRole(organization: Organization) {
     const permissions =
       await this.permissionsService.getCustomerBasicPermissions();
 

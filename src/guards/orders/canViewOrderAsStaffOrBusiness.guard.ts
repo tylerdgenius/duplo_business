@@ -4,7 +4,7 @@ import { RolePermissionsService } from 'src/modules/v1/rolePermissions/rolePermi
 import { User } from 'src/modules/v1/user/user.entity';
 
 @Injectable()
-export class CanAddPermissionGuard implements CanActivate {
+export class CanViewOrderAsStaffOrBusinessGuard implements CanActivate {
   constructor(
     private readonly rolePermissionsService: RolePermissionsService,
   ) {}
@@ -20,9 +20,9 @@ export class CanAddPermissionGuard implements CanActivate {
 
     //Blocking it so that only system admins can add permissions
     if (
-      user.type !== TypesEnum.System &&
+      user.type !== TypesEnum.User &&
       rolePermissions.find(
-        (_) => _.permission.action === PermissionEnums.CreatePermission,
+        (_) => _.permission.action === PermissionEnums.ReadOrder,
       )
     ) {
       return true;

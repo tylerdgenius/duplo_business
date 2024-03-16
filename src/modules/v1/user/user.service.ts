@@ -5,6 +5,7 @@ import {
   HttpStatus,
   Inject,
   Injectable,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { User } from './user.entity';
@@ -15,6 +16,7 @@ import { OrganizationService } from '../organization/organization.service';
 import { hash, compare } from 'bcryptjs';
 import { sign } from 'jsonwebtoken';
 import { RoleService } from '../role/role.service';
+import { PermissionService } from '../permission/permission.service';
 
 @Injectable()
 export class UserService {
@@ -23,6 +25,7 @@ export class UserService {
     private userRepository: Repository<User>,
     private organizationService: OrganizationService,
     private roleService: RoleService,
+    private permissionsService: PermissionService,
   ) {}
 
   async findUserByEmail(email: string) {
@@ -138,25 +141,13 @@ export class UserService {
   }
 
   async createSystemAdmin(data: CreateUserDto) {
-    if (!data.organizationName) {
-      throw new BadRequestException(
-        'Organization name is required when creating a business account',
-      );
-    }
-
     const organization = await this.organizationService.findOne({
       name: data.organizationName,
     });
 
-    if (organization) {
-      throw new ConflictException(
-        'Organization already exists in database. Kindly provide a unique organization name',
-      );
-    }
-
     const confirmThatSystemAdminExists = await this.findSystemAdmin();
 
-    if (confirmThatSystemAdminExists) {
+    if (confirmThatSystemAdminExists || organization) {
       throw new ConflictException(
         'System only permits for one system admin to be on each instance of the product per time',
       );
@@ -180,11 +171,48 @@ export class UserService {
     return savedUser;
   }
 
+  async createCustomer(data: CreateUserDto) {
+    const systemAdminExists = await this.findSystemAdmin();
+
+    if (!systemAdminExists) {
+      throw new BadRequestException(
+        'Cannot create customer because no system admin exists',
+      );
+    }
+
+    const organization = await this.organizationService.findOneOrganization([
+      {
+        id: data.organizationId,
+      },
+      {
+        name: constants.SYSTEM_ADMIN.ORGANIZATION_NAME,
+      },
+    ]);
+
+    if (!organization) {
+      throw new BadRequestException(
+        'Organization does not currently exist on system at this time',
+      );
+    }
+
+    const user = await this.createUser(data);
+
+    const role = await this.roleService.createCustomerBasicRole(organization);
+
+    user.role = role;
+    user.organization = organization;
+
+    const savedUser = await this.userRepository.save(user);
+
+    return savedUser;
+  }
+
   async registerUser(data: CreateUserDto) {
-    if (!data) {
-      throw new HttpException(
-        'The given data is invalid',
-        HttpStatus.UNPROCESSABLE_ENTITY,
+    const permissions = await this.permissionsService.getAllPermissions();
+
+    if (permissions.length <= 0) {
+      throw new InternalServerErrorException(
+        'You cannot register on this system without providing permission seeding',
       );
     }
 
@@ -203,10 +231,16 @@ export class UserService {
     }
 
     if (data.type === TypesEnum.System) {
+      if (data.organizationName !== constants.SYSTEM_ADMIN.ORGANIZATION_NAME) {
+        throw new BadRequestException(
+          `System admin must belong to ${constants.SYSTEM_ADMIN.ORGANIZATION_NAME} Organization. Kindly update your organization name to reflect this`,
+        );
+      }
+
       return this.createSystemAdmin(data);
     }
 
-    const savedUser = await this.createUser(data);
+    const savedUser = await this.createCustomer(data);
 
     return savedUser;
   }
@@ -242,7 +276,7 @@ export class UserService {
       },
     );
 
-    delete userExists.password;
+    // delete userExists.password;
 
     return {
       ...userExists,

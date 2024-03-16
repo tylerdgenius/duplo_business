@@ -12,6 +12,7 @@ import { RolePermissionsModule } from '../rolePermissions';
   controllers: [ProductController],
   imports: [DatabaseModule, UserModule, RolePermissionsModule],
   providers: [...productProviders, ProductService],
+  exports: [ProductService],
 })
 export class ProductModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

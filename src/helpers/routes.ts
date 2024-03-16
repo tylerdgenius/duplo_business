@@ -23,10 +23,12 @@ export const routes = {
     create: 'create',
     getAll: 'all',
     getSingle: 'single/:id',
+    getOrganization: 'organization/all',
+    getOrganizationSingleOrder: 'organization/single/:id',
   },
   permissions: {
     entry: 'permissions',
-    createDefault: 'create',
+    createDefault: 'create/defaults',
     getAll: 'all',
     getSingle: 'single/:id',
     getViews: 'views/all',

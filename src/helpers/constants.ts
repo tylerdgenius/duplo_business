@@ -30,4 +30,7 @@ export const constants = {
   APP: {
     RUNNING_PORT: 'App running on port - ',
   },
+  SYSTEM_ADMIN: {
+    ORGANIZATION_NAME: 'BASE_SYSTEM',
+  },
 };

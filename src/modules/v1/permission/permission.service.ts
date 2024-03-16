@@ -130,6 +130,9 @@ export class PermissionService {
         {
           action: PermissionEnums.DeleteUser,
         },
+        {
+          action: PermissionEnums.ReadPermission,
+        },
       ],
     });
 

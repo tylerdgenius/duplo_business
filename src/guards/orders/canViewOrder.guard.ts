@@ -1,10 +1,10 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
-import { PermissionEnums, TypesEnum } from 'src/enums';
+import { PermissionEnums } from 'src/enums';
 import { RolePermissionsService } from 'src/modules/v1/rolePermissions/rolePermissions.service';
 import { User } from 'src/modules/v1/user/user.entity';
 
 @Injectable()
-export class CanAddPermissionGuard implements CanActivate {
+export class CanViewOrderGuard implements CanActivate {
   constructor(
     private readonly rolePermissionsService: RolePermissionsService,
   ) {}
@@ -20,9 +20,8 @@ export class CanAddPermissionGuard implements CanActivate {
 
     //Blocking it so that only system admins can add permissions
     if (
-      user.type !== TypesEnum.System &&
       rolePermissions.find(
-        (_) => _.permission.action === PermissionEnums.CreatePermission,
+        (_) => _.permission.action === PermissionEnums.ReadOrder,
       )
     ) {
       return true;

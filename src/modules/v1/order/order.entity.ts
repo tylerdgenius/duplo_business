@@ -32,6 +32,9 @@ export class Order {
   unitPrice: number;
 
   @Column()
+  totalPrice: number;
+
+  @Column()
   quantity: number;
 
   @Column({

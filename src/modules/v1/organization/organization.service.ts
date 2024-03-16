@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { constants } from 'src/helpers';
-import { Repository } from 'typeorm';
+import { FindOptionsWhere, Repository } from 'typeorm';
 import { Organization } from './organization.entity';
 
 @Injectable()
@@ -15,6 +15,14 @@ export class OrganizationService {
       where: {
         ...filter,
       },
+    });
+  }
+
+  async findOneOrganization(
+    filter: FindOptionsWhere<Organization> | FindOptionsWhere<Organization>[],
+  ) {
+    return this.organizationRepository.findOne({
+      where: filter,
     });
   }
 

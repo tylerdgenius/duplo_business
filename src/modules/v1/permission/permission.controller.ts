@@ -10,7 +10,7 @@ import { PermissionService } from './permission.service';
 import { PermissionEnums } from 'src/enums';
 import { getters, routes } from 'src/helpers';
 import { CreatePermissionDto } from 'src/dtos';
-import { CanAddPermissionGuard } from 'src/guards';
+import { CanAddPermissionGuard, CanViewPermissionGuard } from 'src/guards';
 
 const allPermissions = [
   PermissionEnums.CreateOrder,
@@ -43,7 +43,7 @@ const allPermissions = [
 export class PermissionController {
   constructor(private readonly permissionService: PermissionService) {}
 
-  @Post('create')
+  @Post(routes.permissions.createDefault)
   async createPermissions() {
     for (const element of allPermissions) {
       await this.permissionService.createPermission({
@@ -59,6 +59,7 @@ export class PermissionController {
   }
 
   @Get(routes.permissions.getAll)
+  @UseGuards(CanViewPermissionGuard)
   async getAllPermissions() {
     const permissions = await this.permissionService.getAllPermissions();
 
@@ -70,6 +71,7 @@ export class PermissionController {
   }
 
   @Get(routes.permissions.getViews)
+  @UseGuards(CanViewPermissionGuard)
   async getAllViewPermissions() {
     const permissions = await this.permissionService.getAllViewPermissions();
 
