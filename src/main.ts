@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { constants, getters } from './helpers';
-import { StatusCodeInterceptor } from './middleware';
+import { StatusCodeInterceptor, TransformInterceptor } from './interceptors';
 import { ValidationExceptionFilter } from './filters';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
@@ -28,6 +28,8 @@ async function bootstrap() {
   getters.getLogger().log(constants.APP.RUNNING_PORT + port);
 
   app.enableCors();
+
+  app.useGlobalInterceptors(new TransformInterceptor());
 
   await app.listen(port);
 }
