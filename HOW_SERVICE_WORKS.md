@@ -103,9 +103,9 @@ There are currently 16 different default permissions based on actions that can b
 
 Each business has the ability to create roles that can mix and match any of the above stated permissions e.g
 
-`Business A creates a role called MODERATOR`
-`Business A can attach permissions like - Create Product, Create User, View User, View Product`
-`Business A can create a user called "Managing Director" and assign the role of ADMIN to said user`
+1. Business A creates a role called MODERATOR
+2. Business A can attach permissions like - Create Product, Create User, View User, View Product
+3. Business A can create a user called "Managing Director" and assign the role of ADMIN to said user
 
 If an when any of the above happens, the user will effectively be able to login and also be able to use resources that fall under the purview of his/her permission scope
 
