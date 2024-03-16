@@ -4,12 +4,14 @@ import {
   Column,
   CreateDateColumn,
   ManyToOne,
+  OneToMany,
 } from 'typeorm';
 import { IsDate } from 'class-validator';
 import { StatusDto } from 'src/dtos';
 import { StatusEnums } from 'src/enums';
 import { Organization } from '../organization/organization.entity';
 import { User } from '../user/user.entity';
+import { Order } from '../order/order.entity';
 
 @Entity()
 export class Product {
@@ -30,6 +32,9 @@ export class Product {
 
   @ManyToOne(() => Organization, (organization) => organization.products)
   organization: Organization;
+
+  @OneToMany(() => Order, (order) => order.product)
+  orders: Order[];
 
   @Column({
     type: 'enum',

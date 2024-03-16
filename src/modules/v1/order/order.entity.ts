@@ -8,23 +8,22 @@ import {
 import { StatusDto } from 'src/dtos';
 import { StatusEnums } from 'src/enums';
 import { Organization } from '../organization/organization.entity';
+import { User } from '../user/user.entity';
+import { Product } from '../product/product.entity';
 
 @Entity()
 export class Order {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
-  productId: string;
+  @ManyToOne(() => Product, (product) => product.orders)
+  product: Product;
 
-  @Column()
-  initiatorId: string;
+  @ManyToOne(() => User, (user) => user.orders)
+  initiator: User;
 
-  @Column()
-  organisationId: string;
-
-  @Column()
-  customerId: string;
+  @ManyToOne(() => Organization, (organization) => organization.orders)
+  organization: Organization;
 
   @Column()
   unitPrice: number;
@@ -38,9 +37,6 @@ export class Order {
     default: 'active',
   })
   status: StatusDto['status'];
-
-  @ManyToOne(() => Organization, (organization) => organization.orders)
-  organization: Organization;
 
   @CreateDateColumn({ type: 'timestamp' })
   createdAt: Date;

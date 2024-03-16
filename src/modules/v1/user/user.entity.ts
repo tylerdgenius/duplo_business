@@ -11,6 +11,7 @@ import { Organization } from '../organization/organization.entity';
 import { Product } from '../product/product.entity';
 import { Exclude } from 'class-transformer';
 import { Role } from '../role/role.entity';
+import { Order } from '../order/order.entity';
 
 @Entity()
 export class User {
@@ -46,6 +47,9 @@ export class User {
 
   @OneToMany(() => Product, (product) => product.initiator)
   products: Product[];
+
+  @OneToMany(() => Product, (product) => product.initiator)
+  orders: Order[];
 
   @CreateDateColumn({ type: 'timestamp' })
   createdAt: Date;
