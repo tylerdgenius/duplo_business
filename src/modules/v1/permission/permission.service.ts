@@ -57,4 +57,12 @@ export class PermissionService {
     permission.action = data.action;
     this.permissionRepository.save(permission);
   }
+
+  async getCreateProductPermission() {
+    return this.permissionRepository.findOne({
+      where: {
+        action: PermissionEnums.CreateProduct,
+      },
+    });
+  }
 }

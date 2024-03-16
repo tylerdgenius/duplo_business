@@ -15,7 +15,7 @@ import { ProductService } from './product.service';
 import { AuthBearer } from 'src/decorators';
 import { CreateProductDto } from 'src/dtos';
 import { CanCreateProductGuard } from 'src/guards';
-import { RolePermissionsService } from '../rolePermissions/rolePermissions.service';
+import { CanViewProductGuard } from 'src/guards/product/canViewProducts.guard';
 
 @Controller(getters.getRoute(routes.product.entry))
 export class ProductController {
@@ -47,6 +47,7 @@ export class ProductController {
 
   @Get(routes.product.getOwned)
   @AuthBearer()
+  @UseGuards(CanViewProductGuard) // To confirm that a user can actually the company's resources
   async getOwnedProducts(
     @Param('id', new ValidationPipe()) organizationId: number,
   ) {
@@ -62,6 +63,7 @@ export class ProductController {
 
   @Get(routes.product.getInitiator)
   @AuthBearer()
+  @UseGuards(CanViewProductGuard)
   async getInitiatorProducts(
     @Param('id', new ValidationPipe()) initiatorId: number,
   ) {

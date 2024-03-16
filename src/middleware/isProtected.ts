@@ -39,8 +39,6 @@ export class IsProtectedMiddleware implements NestMiddleware {
         throw new NotFoundException('Cannot verify user. Kindly try again');
       }
 
-      console.log({ verifiedToken, user });
-
       req['user'] = user;
 
       next();

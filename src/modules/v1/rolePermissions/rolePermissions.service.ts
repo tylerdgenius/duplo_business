@@ -31,4 +31,12 @@ export class RolePermissionsService {
 
     return this.rolePermissionRepository.save(rolePermission);
   }
+
+  async findRolePermissionsByRoleId(roleId: number) {
+    return this.rolePermissionRepository
+      .createQueryBuilder('role_permissions')
+      .leftJoinAndSelect('role_permissions.permission', 'permission')
+      .where('role_permissions.roleId = :roleId', { roleId })
+      .getMany();
+  }
 }

@@ -1,1 +1,1 @@
-export * from './CanCreateProduct.guard';
+export * from './product';

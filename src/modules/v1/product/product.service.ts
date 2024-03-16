@@ -62,5 +62,7 @@ export class ProductService {
     return this.productRepository.find();
   }
 
-  async createProduct(body: CreateProductDto) {}
+  async createProduct(body: CreateProductDto) {
+    return 'hi';
+  }
 }
