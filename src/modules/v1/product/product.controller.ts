@@ -16,6 +16,7 @@ import { AuthBearer } from 'src/decorators';
 import { CreateProductDto } from 'src/dtos';
 import { CanCreateProductGuard } from 'src/guards';
 import { CanViewProductGuard } from 'src/guards/product/canViewProducts.guard';
+import { User } from '../user/user.entity';
 
 @Controller(getters.getRoute(routes.product.entry))
 export class ProductController {
@@ -23,8 +24,13 @@ export class ProductController {
 
   @Post(routes.product.create)
   @UseGuards(CanCreateProductGuard)
-  async createProduct(@Body(new ValidationPipe()) body: CreateProductDto) {
-    const product = await this.productService.createProduct(body);
+  async createProduct(
+    @Req() req: Request,
+    @Body(new ValidationPipe()) body: CreateProductDto,
+  ) {
+    const user = req['user'] as User;
+
+    const product = await this.productService.createProduct(body, user);
 
     return {
       status: true,
@@ -45,14 +51,16 @@ export class ProductController {
     };
   }
 
+  // Currently restricted so only members of that organization can see the organization products using this filtered method
   @Get(routes.product.getOwned)
   @AuthBearer()
-  @UseGuards(CanViewProductGuard) // To confirm that a user can actually the company's resources
-  async getOwnedProducts(
-    @Param('id', new ValidationPipe()) organizationId: number,
-  ) {
-    const products =
-      await this.productService.getProductsByOrganizationId(organizationId);
+  @UseGuards(CanViewProductGuard) // To confirm that a user can actually view the company's resources
+  async getOwnedProducts(@Req() req: Request) {
+    const user = req['user'] as User;
+
+    const products = await this.productService.getProductsByOrganizationId(
+      user.organization.id,
+    );
 
     return {
       status: true,
@@ -64,11 +72,9 @@ export class ProductController {
   @Get(routes.product.getInitiator)
   @AuthBearer()
   @UseGuards(CanViewProductGuard)
-  async getInitiatorProducts(
-    @Param('id', new ValidationPipe()) initiatorId: number,
-  ) {
-    const products =
-      await this.productService.getProductsByInitiator(initiatorId);
+  async getInitiatorProducts(@Req() req: Request) {
+    const user = req['user'] as User;
+    const products = await this.productService.getProductsByInitiator(user.id);
 
     return {
       status: true,

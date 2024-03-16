@@ -9,6 +9,8 @@ import { Repository } from 'typeorm';
 import { Product } from './product.entity';
 import { UserService } from '../user/user.service';
 import { CreateProductDto } from 'src/dtos';
+import { User } from '../user/user.entity';
+import { StatusEnums } from 'src/enums';
 
 @Injectable()
 export class ProductService {
@@ -62,7 +64,19 @@ export class ProductService {
     return this.productRepository.find();
   }
 
-  async createProduct(body: CreateProductDto) {
-    return 'hi';
+  async createProduct(body: CreateProductDto, user: User) {
+    const product = new Product();
+    product.initiator = user;
+    product.organization = user.organization;
+    product.createdAt = new Date();
+    product.updatedAt = new Date();
+    product.description = body.description;
+    product.name = body.name;
+    product.price = body.price;
+    product.status = StatusEnums.Default;
+
+    this.productRepository.save(product);
+
+    return product;
   }
 }

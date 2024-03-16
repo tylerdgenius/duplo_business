@@ -9,8 +9,8 @@ export const routes = {
     entry: 'product',
     create: 'create',
     getAll: 'all',
-    getOwned: 'owned/:id',
-    getInitiator: 'initiator/:id',
+    getOwned: 'owned',
+    getInitiator: 'initiator',
     getSingle: 'single/:id',
   },
   organization: {
